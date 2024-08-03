@@ -5,29 +5,27 @@
 #include <string>
 
 namespace mergekv {
-Exception::Exception(ExceptionType exception_type, const std::string &message)
+Exception::Exception(ExceptionType exception_type, const string &message)
     : std::runtime_error(ToJSON(exception_type, message)) {}
 
-Exception::Exception(
-    ExceptionType exception_type, const std::string &message,
-    const std::unordered_map<std::string, std::string> &extra_info)
+Exception::Exception(ExceptionType exception_type, const string &message,
+                     const std::unordered_map<string, string> &extra_info)
     : std::runtime_error(ToJSON(exception_type, message, extra_info)) {}
 
-std::string Exception::ToJSON(ExceptionType type, const std::string &message) {
-  std::unordered_map<std::string, std::string> extra_info;
+string Exception::ToJSON(ExceptionType type, const string &message) {
+  std::unordered_map<string, string> extra_info;
   return ToJSON(type, message, extra_info);
 }
 
-std::string Exception::ToJSON(
-    ExceptionType type, const std::string &message,
-    const std::unordered_map<std::string, std::string> &extra_info) {
+string Exception::ToJSON(ExceptionType type, const string &message,
+                         const std::unordered_map<string, string> &extra_info) {
   auto extended_extra_info = extra_info;
   extended_extra_info["stack_trace"] = Exception::GetStackTrace();
   return StringUtil::ToJSONMap(type, message, extended_extra_info);
 }
 
-std::string Exception::GetStackTrace(int max_depth) {
-  std::string result;
+string Exception::GetStackTrace(int max_depth) {
+  string result;
   auto callstack = std::unique_ptr<void *[]>(new void *[max_depth]);
   int frames = backtrace(callstack.get(), max_depth);
   char **strs = backtrace_symbols(callstack.get(), frames);
@@ -39,10 +37,10 @@ std::string Exception::GetStackTrace(int max_depth) {
   return "\n" + result;
 }
 
-FatalException::FatalException(ExceptionType type, const std::string &msg)
+FatalException::FatalException(ExceptionType type, const string &msg)
     : Exception(type, msg) {}
 
-InternalException::InternalException(const std::string &msg)
+InternalException::InternalException(const string &msg)
     : Exception(ExceptionType::INTERNAL, msg) {
 #ifdef DUCKDB_CRASH_ON_ASSERT
   Printer::Print("ABORT THROWN BY INTERNAL EXCEPTION: " + msg);
@@ -50,12 +48,11 @@ InternalException::InternalException(const std::string &msg)
 #endif
 }
 
-InvalidInputException::InvalidInputException(const std::string &msg)
+InvalidInputException::InvalidInputException(const string &msg)
     : Exception(ExceptionType::INVALID_INPUT, msg) {}
 
 InvalidInputException::InvalidInputException(
-    const std::string &msg,
-    const std::unordered_map<std::string, std::string> &extra_info)
+    const string &msg, const std::unordered_map<string, string> &extra_info)
     : Exception(ExceptionType::INVALID_INPUT, msg, extra_info) {}
 
 struct ExceptionEntry {
@@ -106,7 +103,7 @@ static constexpr ExceptionEntry EXCEPTION_MAP[] = {
     {ExceptionType::AUTOLOAD, "Extension Autoloading"},
     {ExceptionType::SEQUENCE, "Sequence"}};
 
-std::string Exception::ExceptionTypeToString(ExceptionType type) {
+string Exception::ExceptionTypeToString(ExceptionType type) {
   for (auto &e : EXCEPTION_MAP) {
     if (e.type == type) {
       return e.text;
@@ -114,8 +111,8 @@ std::string Exception::ExceptionTypeToString(ExceptionType type) {
   }
   return "Unknown";
 }
-std::string Exception::ConstructMessageRecursive(
-    const std::string &msg, std::vector<ExceptionFormatValue> &values) {
+string Exception::ConstructMessageRecursive(
+    const string &msg, std::vector<ExceptionFormatValue> &values) {
   return ExceptionFormatValue::Format(msg, values);
 }
 

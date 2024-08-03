@@ -6,11 +6,11 @@
 #include <iterator>
 namespace mergekv {
 
-bytes decodeHex(const std::string &hex) {
+bytes decodeHex(const string &hex) {
   bytes bytes;
 
   for (size_t i = 0; i < hex.length(); i += 2) {
-    std::string byteString = hex.substr(i, 2);
+    string byteString = hex.substr(i, 2);
     uint8_t byte = static_cast<uint8_t>(std::stoi(byteString, nullptr, 16));
     bytes.push_back(byte);
   }
@@ -26,7 +26,7 @@ void testCompressLevel(bytes &src, int level) {
 }
 
 TEST(test_compress_level, test_name) {
-  std::string ss = "foobar baz";
+  string ss = "foobar baz";
   bytes src(ss.begin(), ss.end());
 
   for (int level = 1; level <= 22; level++) {
@@ -39,8 +39,8 @@ TEST(test_compress_level, test_name) {
   testCompressLevel(src, 234324);
 }
 
-std::string c_block_hex("28B52FFD00007D000038C0A907DFD40300015407022B0E02");
-std::string d_block_hex_expected(
+string c_block_hex("28B52FFD00007D000038C0A907DFD40300015407022B0E02");
+string d_block_hex_expected(
     "C0A907DFD4030000000000000000000000000000000000000000000000"
     "00000000000000000000000000000000000000000000000000000000000000000000000"
     "00000000000000000000000000000000000000000000000000000000000000000000000"

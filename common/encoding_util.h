@@ -4,6 +4,7 @@
 #include "types.h"
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <span>
 #include <zstd.h>

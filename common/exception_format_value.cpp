@@ -12,7 +12,7 @@ ExceptionFormatValue::ExceptionFormatValue(double dbl_val)
 ExceptionFormatValue::ExceptionFormatValue(int64_t int_val)
     : type(ExceptionFormatValueType::FORMAT_VALUE_TYPE_INTEGER),
       int_val(int_val) {}
-ExceptionFormatValue::ExceptionFormatValue(std::string str_val)
+ExceptionFormatValue::ExceptionFormatValue(string str_val)
     : type(ExceptionFormatValueType::FORMAT_VALUE_TYPE_STRING),
       str_val(std::move(str_val)) {}
 
@@ -25,8 +25,7 @@ ExceptionFormatValue ExceptionFormatValue::CreateFormatValue(double value) {
   return ExceptionFormatValue(double(value));
 }
 template <>
-ExceptionFormatValue
-ExceptionFormatValue::CreateFormatValue(std::string value) {
+ExceptionFormatValue ExceptionFormatValue::CreateFormatValue(string value) {
   return ExceptionFormatValue(std::move(value));
 }
 
@@ -45,16 +44,15 @@ ExceptionFormatValue::CreateFormatValue(std::span<const uint8_t> value) {
 template <>
 ExceptionFormatValue
 ExceptionFormatValue::CreateFormatValue(const char *value) {
-  return ExceptionFormatValue(std::string(value));
+  return ExceptionFormatValue(string(value));
 }
 template <>
 ExceptionFormatValue ExceptionFormatValue::CreateFormatValue(char *value) {
-  return ExceptionFormatValue(std::string(value));
+  return ExceptionFormatValue(string(value));
 }
 
-std::string
-ExceptionFormatValue::Format(const std::string &msg,
-                             std::vector<ExceptionFormatValue> &values) {
+string ExceptionFormatValue::Format(const string &msg,
+                                    std::vector<ExceptionFormatValue> &values) {
   try {
     std::vector<fmt::basic_format_arg<fmt::printf_context>> format_args;
     for (auto &val : values) {
@@ -83,7 +81,7 @@ ExceptionFormatValue::Format(const std::string &msg,
       throw InvalidInputException(msg);
     }
     throw InternalException(
-        std::string("Primary exception: ") + msg +
+        string("Primary exception: ") + msg +
         "\nSecondary exception in ExceptionFormatValue: " + ex.what());
   } // LCOV_EXCL_STOP
 }

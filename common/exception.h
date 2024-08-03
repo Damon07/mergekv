@@ -1,7 +1,9 @@
 #pragma once
 
+#include "types.h"
 #include <cstdint>
-#include <string>
+#include <memory>
+#include <stdexcept>
 #include <unordered_map>
 
 #include "exception_format_value.h"
@@ -56,16 +58,16 @@ enum class ExceptionType : uint8_t {
 
 class Exception : public std::runtime_error {
 public:
-  Exception(ExceptionType exception_type, const std::string &message);
-  Exception(ExceptionType exception_type, const std::string &message,
-            const std::unordered_map<std::string, std::string> &extra_info);
+  Exception(ExceptionType exception_type, const string &message);
+  Exception(ExceptionType exception_type, const string &message,
+            const std::unordered_map<string, string> &extra_info);
 
 public:
-  static std::string ExceptionTypeToString(ExceptionType type);
-  static ExceptionType StringToExceptionType(const std::string &type);
+  static string ExceptionTypeToString(ExceptionType type);
+  static ExceptionType StringToExceptionType(const string &type);
 
   template <typename... ARGS>
-  static std::string ConstructMessage(const std::string &msg, ARGS... params) {
+  static string ConstructMessage(const string &msg, ARGS... params) {
     const std::size_t num_args = sizeof...(ARGS);
     if (num_args == 0) {
       return msg;
@@ -74,21 +76,20 @@ public:
     return ConstructMessageRecursive(msg, values, params...);
   }
 
-  static std::string ToJSON(ExceptionType type, const std::string &message);
-  static std::string
-  ToJSON(ExceptionType type, const std::string &message,
-         const std::unordered_map<std::string, std::string> &extra_info);
+  static string ToJSON(ExceptionType type, const string &message);
+  static string ToJSON(ExceptionType type, const string &message,
+                       const std::unordered_map<string, string> &extra_info);
 
   static bool InvalidatesTransaction(ExceptionType exception_type);
   static bool InvalidatesDatabase(ExceptionType exception_type);
 
-  static std::string
-  ConstructMessageRecursive(const std::string &msg,
+  static string
+  ConstructMessageRecursive(const string &msg,
                             std::vector<ExceptionFormatValue> &values);
 
   template <class T, typename... ARGS>
-  static std::string
-  ConstructMessageRecursive(const std::string &msg,
+  static string
+  ConstructMessageRecursive(const string &msg,
                             std::vector<ExceptionFormatValue> &values, T param,
                             ARGS... params) {
     values.push_back(ExceptionFormatValue::CreateFormatValue<T>(param));
@@ -97,46 +98,44 @@ public:
 
   static bool UncaughtException();
 
-  static std::string GetStackTrace(int max_depth = 120);
-  static std::string FormatStackTrace(const std::string &message = "") {
+  static string GetStackTrace(int max_depth = 120);
+  static string FormatStackTrace(const string &message = "") {
     return (message + "\n" + GetStackTrace());
   }
 };
 
 class FatalException : public Exception {
 public:
-  explicit FatalException(const std::string &msg)
+  explicit FatalException(const string &msg)
       : FatalException(ExceptionType::FATAL, msg) {}
   template <typename... ARGS>
-  explicit FatalException(const std::string &msg, ARGS... params)
+  explicit FatalException(const string &msg, ARGS... params)
       : FatalException(ConstructMessage(msg, params...)) {}
 
 protected:
-  explicit FatalException(ExceptionType type, const std::string &msg);
+  explicit FatalException(ExceptionType type, const string &msg);
   template <typename... ARGS>
-  explicit FatalException(ExceptionType type, const std::string &msg,
-                          ARGS... params)
+  explicit FatalException(ExceptionType type, const string &msg, ARGS... params)
       : FatalException(type, ConstructMessage(msg, params...)) {}
 };
 
 class InternalException : public Exception {
 public:
-  explicit InternalException(const std::string &msg);
+  explicit InternalException(const string &msg);
 
   template <typename... ARGS>
-  explicit InternalException(const std::string &msg, ARGS... params)
+  explicit InternalException(const string &msg, ARGS... params)
       : InternalException(ConstructMessage(msg, params...)) {}
 };
 
 class InvalidInputException : public Exception {
 public:
-  explicit InvalidInputException(const std::string &msg);
+  explicit InvalidInputException(const string &msg);
   explicit InvalidInputException(
-      const std::string &msg,
-      const std::unordered_map<std::string, std::string> &extra_info);
+      const string &msg, const std::unordered_map<string, string> &extra_info);
 
   template <typename... ARGS>
-  explicit InvalidInputException(const std::string &msg, ARGS... params)
+  explicit InvalidInputException(const string &msg, ARGS... params)
       : InvalidInputException(ConstructMessage(msg, params...)) {}
 };
 

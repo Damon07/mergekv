@@ -13,6 +13,7 @@ const int kMaxInmemoryBlockSize = 64 * 1024;
 
 struct Item {
   Item() = default;
+  ~Item() = default;
   Item(uint32_t start, uint32_t end) : start(start), end(end) {}
   std::span<uint8_t> GetBytes(bytes &data) const {
     return std::span<uint8_t>(data.begin() + start, data.begin() + end);
@@ -76,7 +77,7 @@ private:
   marshal_results MarshalData(StorageBlock &block, bytes &first_item_dst,
                               bytes &common_prefix_dst, int compress_level);
 
-  std::string debugItemString() const;
+  string debugItemString() const;
   bool CompareItems(Item a, Item b) const;
   void MarshalDataPlain(StorageBlock &block);
   void UnmarshalDataPlain(const StorageBlock &block,

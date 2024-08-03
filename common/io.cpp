@@ -1,5 +1,6 @@
 #include "io.h"
 #include <cstddef>
+#include <cstring>
 #include <tuple>
 
 namespace mergekv {

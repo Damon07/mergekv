@@ -1,7 +1,7 @@
 #pragma once
 
 #include "exception.h"
-#include <string>
+#include "types.h"
 #include <unordered_map>
 
 namespace mergekv {
@@ -13,13 +13,12 @@ namespace mergekv {
  */
 class StringUtil {
 public:
-  static bool Contains(const std::string &haystack, const std::string &needle);
-  static std::string
-  ToJSONMap(ExceptionType type, const std::string &message,
-            const std::unordered_map<std::string, std::string> &map);
-  static std::string Format(std::span<uint8_t> value);
-  static std::string Format(std::vector<uint8_t> value);
-  static std::string Format(std::span<const uint8_t> value);
-  static std::vector<uint8_t> Bytes(const std::string &str);
+  static bool Contains(const string &haystack, const string &needle);
+  static string ToJSONMap(ExceptionType type, const string &message,
+                          const std::unordered_map<string, string> &map);
+  static string Format(std::span<uint8_t> value);
+  static string Format(const std::vector<uint8_t> &value);
+  static string Format(std::span<const uint8_t> value);
+  static std::vector<uint8_t> Bytes(const string &str);
 };
 } // namespace mergekv

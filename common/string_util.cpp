@@ -2,12 +2,11 @@
 #include <fmt/core.h>
 
 namespace mergekv {
-bool StringUtil::Contains(const std::string &haystack,
-                          const std::string &needle) {
-  return (haystack.find(needle) != std::string::npos);
+bool StringUtil::Contains(const string &haystack, const string &needle) {
+  return (haystack.find(needle) != string::npos);
 }
 
-static void WriteJSONValue(const std::string &value, std::string &result) {
+static void WriteJSONValue(const string &value, string &result) {
   result += '"';
   for (auto c : value) {
     // check for characters we need to escape
@@ -44,19 +43,18 @@ static void WriteJSONValue(const std::string &value, std::string &result) {
   result += '"';
 }
 
-static void WriteJSONPair(const std::string &key, const std::string &value,
-                          std::string &result) {
+static void WriteJSONPair(const string &key, const string &value,
+                          string &result) {
   WriteJSONValue(key, result);
   result += ":";
   WriteJSONValue(value, result);
 }
 
-std::string
-StringUtil::ToJSONMap(ExceptionType type, const std::string &message,
-                      const std::unordered_map<std::string, std::string> &map) {
+string StringUtil::ToJSONMap(ExceptionType type, const string &message,
+                             const std::unordered_map<string, string> &map) {
   // D_ASSERT(map.find("exception_type") == map.end());
   // D_ASSERT(map.find("exception_message") == map.end());
-  std::string result;
+  string result;
   result += "{";
   // we always write exception type/message
   WriteJSONPair("exception_type", Exception::ExceptionTypeToString(type),
@@ -71,29 +69,29 @@ StringUtil::ToJSONMap(ExceptionType type, const std::string &message,
   return result;
 }
 
-std::string StringUtil::Format(std::span<uint8_t> value) {
-  std::string hex_str = "0x";
+string StringUtil::Format(std::span<uint8_t> value) {
+  string hex_str = "0x";
   for (auto byte : value) {
     fmt::format_to(std::back_inserter(hex_str), "{:02x}", byte);
   }
   return hex_str;
 }
-std::string StringUtil::Format(std::span<const uint8_t> value) {
-  std::string hex_str = "0x";
+string StringUtil::Format(std::span<const uint8_t> value) {
+  string hex_str = "0x";
   for (auto byte : value) {
     fmt::format_to(std::back_inserter(hex_str), "{:02x}", byte);
   }
   return hex_str;
 }
-std::string StringUtil::Format(std::vector<uint8_t> value) {
-  std::string hex_str = "0x";
+string StringUtil::Format(const std::vector<uint8_t> &value) {
+  string hex_str = "0x";
   for (auto byte : value) {
     fmt::format_to(std::back_inserter(hex_str), "{:02x}", byte);
   }
   return hex_str;
 }
 
-std::vector<uint8_t> StringUtil::Bytes(const std::string &str) {
+std::vector<uint8_t> StringUtil::Bytes(const string &str) {
   std::vector<uint8_t> result(str.begin(), str.end());
   return result;
 }

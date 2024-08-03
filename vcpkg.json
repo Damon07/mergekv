@@ -3,6 +3,7 @@
     "fmt",
     "gtest",
     "prometheus-cpp",
-    "zstd"
+    "zstd",
+    "simdjson"
   ]
 }

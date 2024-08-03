@@ -18,8 +18,8 @@ void InMemoryBlock::CopyFrom(InMemoryBlock &src) {
   items_ = std::vector<Item>(src.items_.begin(), src.items_.end());
 }
 
-auto printAscii = [](const std::string_view str) {
-  std::string asciiRepresentation;
+auto printAscii = [](const string_view str) {
+  string asciiRepresentation;
   for (char c : str) {
     asciiRepresentation += fmt::format("{} ", static_cast<int>(c));
   }
@@ -399,8 +399,8 @@ void InMemoryBlock::UnmarshalDataPlain(const StorageBlock &block,
   }
 }
 
-std::string InMemoryBlock::debugItemString() const {
-  std::string s, pre_item;
+string InMemoryBlock::debugItemString() const {
+  string s, pre_item;
   size_t idx = 0;
   for (auto &it : items_) {
     auto item = it.GetString(data_);

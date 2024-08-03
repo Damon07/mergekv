@@ -14,12 +14,12 @@
 #include <vector>
 
 namespace mergekv {
-auto to_bytes = [](const std::string &s) -> bytes {
+auto to_bytes = [](const string &s) -> bytes {
   return bytes(s.begin(), s.end());
 };
 
-auto to_string = [](const bytes &b) -> std::string {
-  return std::string(b.begin(), b.end());
+auto to_string = [](const bytes &b) -> string {
+  return string(b.begin(), b.end());
 };
 
 auto get_random_bytes = [](std::mt19937 &gen) -> bytes {
@@ -41,7 +41,7 @@ auto get_randown_num = [](std::mt19937 &gen, size_t max) -> size_t {
 auto check_marshal_type(MarshalType mt) { return mt >= 0 && mt <= 1; }
 
 TEST(Encoding, CommonPrefixLen) {
-  auto f = [](const std::string &a, const std::string &b, size_t expect) {
+  auto f = [](const string &a, const string &b, size_t expect) {
     auto prefix_len = CommonPrefixLen(to_bytes(a), to_bytes(b));
     EXPECT_EQ(prefix_len, expect);
   };
@@ -65,7 +65,7 @@ TEST(InmemoryBlock, Add) {
 
   for (size_t i = 0; i < 30; i++) {
     InMemoryBlock block;
-    std::vector<std::string> items;
+    std::vector<string> items;
     size_t total_len = 0;
 
     for (size_t j = 0; j < i * 100 + 1; j++) {
@@ -95,7 +95,7 @@ TEST(InmemoryBlock, Sort) {
 
   for (size_t i = 0; i < 100; i++) {
     InMemoryBlock block;
-    std::vector<std::string> items;
+    std::vector<string> items;
     size_t total_len = 0;
 
     for (size_t j = 0; j < 1500; j++) {
@@ -122,8 +122,8 @@ TEST(InmemoryBlock, Sort) {
   }
 }
 
-auto to_hex_string = [](bytes_const_span b) -> std::string {
-  std::string hex_str = "";
+auto to_hex_string = [](bytes_const_span b) -> string {
+  string hex_str = "";
   for (auto byte : b) {
     fmt::format_to(std::back_inserter(hex_str), "0x{:02x},", byte);
   }
@@ -139,14 +139,14 @@ TEST(InmemoryBlock, MarshalUnmarshal) {
   MarshalType mt;
 
   for (size_t i = 0; i < 1000; i += 10) {
-    std::vector<std::string> items;
+    std::vector<string> items;
     size_t total_len = 0;
     StorageBlock block;
     InMemoryBlock b1, b2;
     first_item.clear();
     common_prefix.clear();
 
-    auto prefix = std::string("prefix");
+    auto prefix = string("prefix");
 
     auto items_count = 2 * (get_randown_num(gen, i + 1) + 1);
     for (size_t j = 0; j < items_count / 2; j++) {
