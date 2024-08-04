@@ -6,6 +6,7 @@
 #include <zstd_errors.h>
 
 namespace mergekv {
+  bool check_marshal_type(MarshalType mt) { return mt >= 0 && mt <= 1; }
 size_t CommonPrefixLen(const bytes &a, const bytes &b) {
   size_t i = 0;
   if (a.size() > b.size()) {

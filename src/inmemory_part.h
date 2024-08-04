@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <fmt/core.h>
 #include <string_view>
+#include "bytes_util.h"
 
 namespace mergekv {
 struct PartHeader {
@@ -39,6 +40,15 @@ struct PartHeader {
   size_t blocks_count_;
   bytes first_item_;
   bytes last_item_;
+};
+
+class InMemoryPart {
+public:
+
+
+private:
+PartHeader ph_;
+
 };
 
 } // namespace mergekv

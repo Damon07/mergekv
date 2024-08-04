@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <sys/types.h>
 #include <tuple>
 #include <zstd.h>
 #include <zstd_errors.h>
@@ -296,6 +297,32 @@ bytes_const_span EncodingUtil::UnmarshalVarUint64sSlow(u64s &dst,
     dst[i] = u;
   }
   return src.subspan(idx);
+}
+
+void EncodingUtil::MarshalUint32(bytes &dst, uint32_t u){
+  dst.insert(dst.end(), {uint8_t(u>>24), uint8_t(u>>16), uint8_t(u>>8), uint8_t(u)});
+}
+uint32_t EncodingUtil::UnmarshalUint32(bytes_const_span src){
+    return     static_cast<uint32_t>(src[0]) << 24 |
+         static_cast<uint32_t>(src[1]) << 16 |
+         static_cast<uint32_t>(src[2]) << 8 | static_cast<uint32_t>(src[3]);
+}
+  
+void EncodingUtil::MarshalBytes(bytes &dst, bytes_const_span src){
+  MarshalVarUint64(dst, src.size());
+  dst.insert(dst.end(), src.begin(), src.end());
+}
+std::tuple<bytes_const_span, int> EncodingUtil::UnmarshalBytes(bytes_const_span src){
+  auto [n, n_size] = UnmarshalVarUint64(src);
+  if (n_size <= 0) {
+    return {bytes_const_span(), n_size};
+  }
+  if (uint64_t(n_size) + n > src.size()) {
+    return {bytes_const_span(), n_size};
+  }
+  auto start = n_size;
+  n_size += n;
+  return {src.subspan(start, n), n_size};
 }
 
 void EncodingUtil::CompressZSTDLevel(bytes &dst, bytes_const_span src,

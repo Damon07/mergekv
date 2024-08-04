@@ -38,8 +38,6 @@ auto get_randown_num = [](std::mt19937 &gen, size_t max) -> size_t {
   return dis(gen);
 };
 
-auto check_marshal_type(MarshalType mt) { return mt >= 0 && mt <= 1; }
-
 TEST(Encoding, CommonPrefixLen) {
   auto f = [](const string &a, const string &b, size_t expect) {
     auto prefix_len = CommonPrefixLen(to_bytes(a), to_bytes(b));

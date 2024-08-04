@@ -27,4 +27,12 @@ private:
   bytes_const_span src_;
 };
 
+class FileReader {
+  public:
+  virtual ~FileReader() = default;
+  virtual string Path() const = 0;
+  virtual size_t Read(bytes &p) = 0;
+  virtual void MustClose() {};
+};
+
 } // namespace mergekv

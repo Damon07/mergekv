@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 #include <span>
+#include <tuple>
 #include <zstd.h>
 
 namespace mergekv {
@@ -26,6 +27,11 @@ public:
   static bytes_const_span UnmarshalVarUint64sSlow(u64s &dst,
                                                   bytes_const_span src);
   static mu64_bytes Uvarint(bytes_const_span src);
+  static void MarshalUint32(bytes &dst, uint32_t u);
+  static uint32_t UnmarshalUint32(bytes_const_span src);
+
+  static void MarshalBytes(bytes &dst, bytes_const_span src);
+  static std::tuple<bytes_const_span, int> UnmarshalBytes(bytes_const_span src);
 
   static void CompressZSTDLevel(bytes &dst, bytes_const_span src, int level);
   static void DecompressZSTD(bytes &dst, bytes_const_span src);

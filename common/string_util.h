@@ -20,5 +20,6 @@ public:
   static string Format(const std::vector<uint8_t> &value);
   static string Format(std::span<const uint8_t> value);
   static std::vector<uint8_t> Bytes(const string &str);
+  static string_view ToStringView(bytes_const_span value);
 };
 } // namespace mergekv

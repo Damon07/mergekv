@@ -96,4 +96,9 @@ std::vector<uint8_t> StringUtil::Bytes(const string &str) {
   return result;
 }
 
+string_view ToStringView(bytes_const_span value) {
+  return string_view(reinterpret_cast<const char *>(value.data()),
+                     value.size());
+}
+
 } // namespace mergekv
