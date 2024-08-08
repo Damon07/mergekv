@@ -10,6 +10,7 @@ public:
   virtual ~Reader() = default;
   virtual std::tuple<size_t, bool> Read(void *data, size_t n) = 0;
   virtual std::tuple<size_t, bool> Read(bytes &buf) = 0;
+  static void ReadAll(bytes &dst, Reader &r);
 };
 
 class BytesReader : public Reader {
@@ -28,11 +29,11 @@ private:
 };
 
 class FileReader {
-  public:
+public:
   virtual ~FileReader() = default;
   virtual string Path() const = 0;
   virtual size_t Read(bytes &p) = 0;
-  virtual void MustClose() {};
+  virtual void MustClose(){};
 };
 
 } // namespace mergekv

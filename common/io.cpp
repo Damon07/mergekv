@@ -5,6 +5,26 @@
 
 namespace mergekv {
 
+// ReadAll reads from r until eof and returns the data it read.
+void Reader::ReadAll(bytes &dst, Reader &r) {
+  if (dst.size() == 0) {
+    dst.reserve(512);
+  }
+  while (true) {
+    auto start = dst.size();
+    auto [n, eof] = r.Read(dst.data() + start, dst.capacity() - start);
+    dst.resize(start + n);
+    if (eof) {
+      break;
+    }
+    if (dst.size() == dst.capacity()) {
+      auto pre_size = dst.size();
+      dst.push_back(0);
+      dst.resize(pre_size);
+    }
+  }
+}
+
 // read n bytes from src_ to data, if eof, return true
 std::tuple<size_t, bool> BytesReader::Read(void *data, size_t n) {
   if (src_.empty()) {
@@ -20,7 +40,7 @@ std::tuple<size_t, bool> BytesReader::Read(void *data, size_t n) {
   return {n, false};
 }
 
-// read n bytes from src_ to buf, if eof, return -1
+// read n bytes from src_ to buf, if eof, return false
 std::tuple<size_t, bool> BytesReader::Read(bytes &buf) {
   if (src_.empty()) {
     return {0, true};

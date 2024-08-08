@@ -1,13 +1,23 @@
 #pragma once
 
+#include "block_header.h"
+#include "bytes_util.h"
+#include "metaindex_row.h"
 #include "string_util.h"
 #include "types.h"
 #include <cstddef>
 #include <fmt/core.h>
 #include <string_view>
-#include "bytes_util.h"
 
 namespace mergekv {
+
+struct PartHeaderJson {
+  size_t items_count;
+  size_t blocks_count;
+  string first_item;
+  string last_item;
+};
+
 struct PartHeader {
   PartHeader() = default;
   ~PartHeader() = default;
@@ -35,6 +45,7 @@ struct PartHeader {
   }
 
   void MustReadMetadata(const string &part_path);
+  void MustWriteMetadata(const string &part_path);
 
   size_t items_count_;
   size_t blocks_count_;
@@ -44,11 +55,10 @@ struct PartHeader {
 
 class InMemoryPart {
 public:
-
-
 private:
-PartHeader ph_;
-
+  PartHeader ph_;
+  BlockHeader bh_;
+  MetaIndexRow mr_;
 };
 
 } // namespace mergekv

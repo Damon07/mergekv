@@ -4,6 +4,7 @@
     "gtest",
     "prometheus-cpp",
     "zstd",
-    "simdjson"
+    "simdjson",
+    "nlohmann-json"
   ]
 }

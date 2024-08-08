@@ -13,8 +13,9 @@ find_package(fmt CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)#查找GTest
 find_package(zstd CONFIG REQUIRED)
 find_package(simdjson CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp" "test/*cpp" "common/*cpp")
 add_executable(mergekv ${SOURCES})
 
-target_link_libraries(mergekv PRIVATE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main fmt::fmt zstd::libzstd simdjson::simdjson)
+target_link_libraries(mergekv PRIVATE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main fmt::fmt zstd::libzstd simdjson::simdjson nlohmann_json::nlohmann_json)

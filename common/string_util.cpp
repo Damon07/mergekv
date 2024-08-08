@@ -1,7 +1,29 @@
 #include "string_util.h"
+#include "types.h"
+#include <cstdint>
 #include <fmt/core.h>
 
 namespace mergekv {
+
+const string hextable = "0123456789abcdef";
+const string reverseHexTable =
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\xff\xff\xff\xff\xff\xff"
+    "\xff\x0a\x0b\x0c\x0d\x0e\x0f\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\x0a\x0b\x0c\x0d\x0e\x0f\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
+    "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
+
 bool StringUtil::Contains(const string &haystack, const string &needle) {
   return (haystack.find(needle) != string::npos);
 }
@@ -91,14 +113,53 @@ string StringUtil::Format(const std::vector<uint8_t> &value) {
   return hex_str;
 }
 
+bytes StringUtil::EncodeHex(bytes_const_span value) {
+  bytes dst(value.size() * 2);
+  for (auto byte : value) {
+    dst.insert(dst.end(), {uint8_t(hextable[(byte >> 4)]),
+                           uint8_t(hextable[(byte & 0x0f)])});
+  }
+  return dst;
+}
+
+bytes StringUtil::DecodeHex(bytes_const_span value) {
+  if (value.size() % 2 != 0) {
+    throw InvalidInputException("Invalid hex string length");
+  }
+  bytes dst(value.size() / 2);
+  for (size_t i = 0; i < value.size(); i += 2) {
+    uint8_t high = reverseHexTable[value[i]];
+    uint8_t low = reverseHexTable[value[i + 1]];
+    if (high > 0x0f) {
+      throw InvalidInputException("Invalid hex character: %c", high);
+    }
+
+    if (low > 0x0f) {
+      throw InvalidInputException("Invalid hex character: %c", low);
+    }
+
+    dst.push_back((high << 4) | low);
+  }
+  return dst;
+}
+
 std::vector<uint8_t> StringUtil::Bytes(const string &str) {
   std::vector<uint8_t> result(str.begin(), str.end());
   return result;
 }
 
-string_view ToStringView(bytes_const_span value) {
+bytes_const_span StringUtil::BytesConstSpan(const string &str) {
+  return bytes_span(reinterpret_cast<uint8_t *>(const_cast<char *>(str.data())),
+                    str.size());
+}
+
+string_view StringUtil::ToStringView(bytes_const_span value) {
   return string_view(reinterpret_cast<const char *>(value.data()),
                      value.size());
+}
+
+string StringUtil::ToString(bytes_const_span value) {
+  return string(reinterpret_cast<const char *>(value.data()), value.size());
 }
 
 } // namespace mergekv
