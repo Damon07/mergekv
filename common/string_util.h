@@ -3,6 +3,7 @@
 #include "exception.h"
 #include "types.h"
 #include <unordered_map>
+#include <vector>
 
 namespace mergekv {
 /**
@@ -25,5 +26,9 @@ public:
   static string ToString(bytes_const_span value);
   static bytes EncodeHex(bytes_const_span value);
   static bytes DecodeHex(bytes_const_span value);
+  static std::vector<string> Split(const string &s, const string &delim);
+  static string ltrim_space(const string &s);
+  static string rtrim_space(const string &s);
+  static string trim_space(const string &s);
 };
 } // namespace mergekv

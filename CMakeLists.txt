@@ -5,6 +5,25 @@ set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
 set(CMAKE_CXX_STANDARD 20)
 
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set (OS_LINUX 1)
+    add_definitions(-D OS_LINUX)
+elseif (CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+    set (OS_FREEBSD 1)
+    add_definitions(-D OS_FREEBSD)
+elseif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    set (OS_DARWIN 1)
+    add_definitions(-D OS_DARWIN)
+    # For MAP_ANON/MAP_ANONYMOUS
+    add_definitions(-D _DARWIN_C_SOURCE)
+elseif (CMAKE_SYSTEM_NAME MATCHES "SunOS")
+    set (OS_SUNOS 1)
+    add_definitions(-D OS_SUNOS)
+else ()
+    message (FATAL_ERROR "Platform ${CMAKE_SYSTEM_NAME} is not supported")
+endif ()
+
+
 project(mergekv)
 
 include_directories(src test common)

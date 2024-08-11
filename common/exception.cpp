@@ -55,6 +55,9 @@ InvalidInputException::InvalidInputException(
     const string &msg, const std::unordered_map<string, string> &extra_info)
     : Exception(ExceptionType::INVALID_INPUT, msg, extra_info) {}
 
+IOException::IOException(ExceptionType type, const string &msg)
+    : Exception(type, msg) {}
+
 struct ExceptionEntry {
   ExceptionType type;
   char text[48];

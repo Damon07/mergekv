@@ -1,5 +1,6 @@
 #include "inmemory_part.h"
 #include "exception.h"
+#include "file.h"
 #include "filenames.h"
 #include "string_util.h"
 #include "types.h"
@@ -87,4 +88,22 @@ void PartHeader::MustWriteMetadata(const string &part_path) {
   std::ofstream metadata_file(metadata_path);
   metadata_file << metadata_data;
 }
+
+void InMemoryPart::MustStoreToDisk(const string &part_path) {
+  fs::path base_path = part_path;
+  fs::create_directories(base_path);
+
+  ph_.MustWriteMetadata(part_path);
+
+  auto metaindex_path = fs::path(base_path / kMetaindexFilename);
+  auto index_path = fs::path(base_path / kIndexFilename);
+  auto items_path = fs::path(base_path / kItemsFilename);
+  auto lens_path = fs::path(base_path / kLensFilename);
+
+  FileUtils::MustWriteSync(metaindex_path, metaindex_data_.data());
+  FileUtils::MustWriteSync(index_path, index_data_.data());
+  FileUtils::MustWriteSync(items_path, items_data_.data());
+  FileUtils::MustWriteSync(lens_path, lens_data_.data());
+}
+
 } // namespace mergekv

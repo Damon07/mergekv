@@ -139,4 +139,20 @@ public:
       : InvalidInputException(ConstructMessage(msg, params...)) {}
 };
 
+class IOException : public Exception {
+public:
+  explicit IOException(const string &msg)
+      : IOException(ExceptionType::IO, msg) {}
+
+  template <typename... ARGS>
+  explicit IOException(const string &msg, ARGS... params)
+      : IOException(ConstructMessage(msg, params...)) {}
+
+protected:
+  explicit IOException(ExceptionType type, const string &msg);
+  template <typename... ARGS>
+  explicit IOException(ExceptionType type, const string &msg, ARGS... params)
+      : IOException(type, ConstructMessage(msg, params...)) {}
+};
+
 } // namespace mergekv

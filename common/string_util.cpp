@@ -2,6 +2,7 @@
 #include "types.h"
 #include <cstdint>
 #include <fmt/core.h>
+#include <ranges>
 
 namespace mergekv {
 
@@ -23,6 +24,7 @@ const string reverseHexTable =
     "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
     "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
     "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
+const string kWhileSpace = " \t\n\r\f\v";
 
 bool StringUtil::Contains(const string &haystack, const string &needle) {
   return (haystack.find(needle) != string::npos);
@@ -160,6 +162,31 @@ string_view StringUtil::ToStringView(bytes_const_span value) {
 
 string StringUtil::ToString(bytes_const_span value) {
   return string(reinterpret_cast<const char *>(value.data()), value.size());
+}
+
+std::vector<string> StringUtil::Split(const string &s, const string &delim) {
+  std::vector<std::string> lines;
+  for (const auto &word : std::views::split(s, delim)) {
+    lines.push_back(std::string(word.begin(), word.end()));
+  }
+  return std::move(lines);
+}
+
+// Helper function to trim leading spaces
+string StringUtil::ltrim_space(const string &s) {
+  size_t start = s.find_first_not_of(kWhileSpace);
+  return (start == string::npos) ? "" : s.substr(start);
+}
+
+// Helper function to trim trailing spaces
+string StringUtil::rtrim_space(const string &s) {
+  size_t end = s.find_last_not_of(kWhileSpace);
+  return (end == string::npos) ? "" : s.substr(0, end + 1);
+}
+
+// Function to trim spaces from both ends
+string StringUtil::trim_space(const string &s) {
+  return rtrim_space(ltrim_space(s));
 }
 
 } // namespace mergekv

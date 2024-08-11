@@ -36,4 +36,18 @@ public:
   virtual void MustClose(){};
 };
 
+class Writer {
+public:
+  virtual ~Writer() = default;
+  virtual size_t Write(bytes_const_span p) = 0;
+};
+
+class FileWriter : public Writer {
+public:
+  virtual ~FileWriter() = default;
+  virtual string Path() const = 0;
+  virtual void MustClose() = 0;
+  virtual void MustSync(bool sync) = 0;
+};
+
 } // namespace mergekv
