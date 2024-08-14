@@ -31,6 +31,7 @@ public:
   ByteBuffer(const ByteBuffer &) = delete;
   ByteBuffer &operator=(const ByteBuffer &) = delete;
   ByteBuffer() = default;
+  ByteBuffer(bytes &data);
 
   string Path() const override {
     return fmt::format("ByteBuffer/{:x}/mem",
@@ -53,7 +54,7 @@ public:
 
   size_t size() const { return data_->size(); }
 
-  bytes_const_span data() const { return *data_; }
+  std::shared_ptr<bytes> data() const { return data_; }
 
 private:
   std::shared_ptr<bytes> data_;

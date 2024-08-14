@@ -7,8 +7,8 @@
 
 namespace mergekv {
 struct BlockHeader {
-  bytes_const_span common_prefix;
-  bytes_const_span first_item;
+  bytes common_prefix;
+  bytes first_item;
   bool no_copy;
   MarshalType mt;
   uint32_t items_count;

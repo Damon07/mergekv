@@ -3,6 +3,7 @@
 #include "encoding.h"
 #include "types.h"
 #include <cstdint>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <tuple>
@@ -38,8 +39,11 @@ struct Item {
 };
 
 struct StorageBlock {
-  bytes lens_data;
-  bytes items_data;
+  std::shared_ptr<bytes> lens_data;
+  std::shared_ptr<bytes> items_data;
+  StorageBlock(std::shared_ptr<bytes> lens_data,
+               std::shared_ptr<bytes> items_data)
+      : lens_data(lens_data), items_data(items_data) {}
 };
 
 class InMemoryBlock {

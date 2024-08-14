@@ -169,8 +169,8 @@ InMemoryBlock::MarshalData(StorageBlock &block, bytes &first_item_dst,
   bytes lens_bytes;
   EncodingUtil::MarshalVarUint64s(lens_bytes, x_lens);
 
-  block.items_data.clear();
-  EncodingUtil::CompressZSTDLevel(block.items_data, items_bytes,
+  block.items_data->clear();
+  EncodingUtil::CompressZSTDLevel(*block.items_data, items_bytes,
                                   compress_level);
   // for reuse
   x_lens.clear();
@@ -186,9 +186,9 @@ InMemoryBlock::MarshalData(StorageBlock &block, bytes &first_item_dst,
 
   EncodingUtil::MarshalVarUint64s(lens_bytes, x_lens);
 
-  block.lens_data.clear();
-  EncodingUtil::CompressZSTDLevel(block.lens_data, lens_bytes, compress_level);
-  if (double(block.items_data.size()) >
+  block.lens_data->clear();
+  EncodingUtil::CompressZSTDLevel(*block.lens_data, lens_bytes, compress_level);
+  if (double(block.items_data->size()) >
       0.9 * double(data_.size() - common_prefix_.size() * items_.size())) {
     // Bad compression rate. It is cheaper to use plain encoding.
     MarshalDataPlain(block);
@@ -203,21 +203,21 @@ void InMemoryBlock::MarshalDataPlain(StorageBlock &block) {
   // There is no need in marshaling the first item, since it is returned
   // to the caller in marshalData.
   auto cp_len = common_prefix_.size();
-  block.items_data.clear();
+  block.items_data->clear();
   auto &items_data = block.items_data;
   for (size_t i = 1; i < items_.size(); i++) {
     auto it = items_[i]; // copy, since we will change it
     it.start += cp_len;
     auto item = it.GetBytes(data_);
-    items_data.insert(items_data.end(), item.begin(), item.end());
+    items_data->insert(items_data->end(), item.begin(), item.end());
   }
 
   // Marshal lens data.
-  block.lens_data.clear();
+  block.lens_data->clear();
   auto &lens_data = block.lens_data;
   for (size_t i = 1; i < items_.size(); i++) {
     EncodingUtil::MarshalUint64(
-        lens_data, uint64_t(items_[i].end - items_[i].start - cp_len));
+        *lens_data, uint64_t(items_[i].end - items_[i].start - cp_len));
   }
 }
 
@@ -251,7 +251,7 @@ void InMemoryBlock::UnmarshalData(const StorageBlock &block,
   // unmarshal marshalTypeSZTD data
   // todo, reserve buf_data size
   bytes buf_data;
-  EncodingUtil::DecompressZSTD(buf_data, block.lens_data);
+  EncodingUtil::DecompressZSTD(buf_data, *block.lens_data);
 
   u64s lens;
   lens.resize(items_count * 2);
@@ -291,7 +291,7 @@ void InMemoryBlock::UnmarshalData(const StorageBlock &block,
 
   // then we can unmarshal items use lens
   buf_data.resize(0);
-  EncodingUtil::DecompressZSTD(buf_data, block.items_data);
+  EncodingUtil::DecompressZSTD(buf_data, *(block.items_data));
   data_.reserve(data_len);
   data_.resize(0);
   data_.insert(data_.end(), first_item.begin(), first_item.end());
@@ -348,7 +348,7 @@ void InMemoryBlock::UnmarshalDataPlain(const StorageBlock &block,
   u64s lens_buf;
   lens_buf.resize(items_count);
   lens_buf[0] = first_item.size() - common_prefix_.size();
-  bytes_const_span b = block.lens_data;
+  bytes_const_span b = *block.lens_data;
   for (size_t i = 1; i < items_count; i++) {
     if (b.size() < 8) {
       throw InvalidInputException(
@@ -367,14 +367,14 @@ void InMemoryBlock::UnmarshalDataPlain(const StorageBlock &block,
   }
 
   // Unmarshal items data.
-  auto data_len = first_item.size() + block.items_data.size() +
+  auto data_len = first_item.size() + block.items_data->size() +
                   common_prefix_.size() * (items_count - 1);
   data_.reserve(data_len);
   data_.resize(0);
   data_.insert(data_.end(), first_item.begin(), first_item.end());
   items_.resize(items_count);
   items_[0] = Item(0, uint32_t(data_.size()));
-  bytes_const_span bs = block.items_data;
+  bytes_const_span bs = *block.items_data;
   for (size_t i = 1; i < items_count; i++) {
     auto item_len = lens_buf[i];
     if (bs.size() < item_len) {

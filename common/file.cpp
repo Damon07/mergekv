@@ -7,8 +7,9 @@
 #include <filesystem>
 #include <memory>
 #include <mutex>
-#include <sys/_types/_mode_t.h>
+// #include <sys/_types/_mode_t.h>
 #include <sys/fcntl.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 namespace mergekv {
@@ -78,6 +79,9 @@ void BufferFileWriter::MustFlush(bool sync) {
 }
 
 void BufferFileWriter::MustClose() {
+  if (fd_ == -1) {
+    return;
+  }
   try {
     bw_->Flush();
     if (fsync(fd_) == -1) {
@@ -105,11 +109,7 @@ void BufferFileWriter::MustSync(bool sync) {
   }
 }
 
-BufferFileWriter::~BufferFileWriter() {
-  if (fd_ != -1) {
-    MustClose();
-  }
-}
+BufferFileWriter::~BufferFileWriter() { MustClose(); }
 
 std::atomic<uint64_t> FileUtils::tmp_file_num(0);
 

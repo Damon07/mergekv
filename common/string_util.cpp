@@ -160,6 +160,12 @@ string_view StringUtil::ToStringView(bytes_const_span value) {
                      value.size());
 }
 
+bytes_const_span StringUtil::BytesConstSpan(string_view value) {
+  return bytes_span(
+      reinterpret_cast<uint8_t *>(const_cast<char *>(value.data())),
+      value.size());
+}
+
 string StringUtil::ToString(bytes_const_span value) {
   return string(reinterpret_cast<const char *>(value.data()), value.size());
 }

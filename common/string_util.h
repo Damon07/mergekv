@@ -22,6 +22,7 @@ public:
   static string Format(std::span<const uint8_t> value);
   static std::vector<uint8_t> Bytes(const string &str);
   static bytes_const_span BytesConstSpan(const string &str);
+  static bytes_const_span BytesConstSpan(string_view str);
   static string_view ToStringView(bytes_const_span value);
   static string ToString(bytes_const_span value);
   static bytes EncodeHex(bytes_const_span value);

@@ -5,6 +5,11 @@
 #include <tuple>
 
 namespace mergekv {
+
+#ifndef O_DIRECT
+#define O_DIRECT 00040000
+#endif
+
 class Reader {
 public:
   virtual ~Reader() = default;
